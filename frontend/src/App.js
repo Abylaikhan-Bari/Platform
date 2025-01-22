@@ -1,41 +1,22 @@
 import React, { useState } from "react";
 import Register from "./Register";
-import Login from "./Login";  // Import the Login component
+import Login from "./Login";
 import BooksList from "./BooksList";
-import { auth } from "./firebase";  // Correctly import Firebase auth
+import { auth } from "./firebase";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
-  const [showRegister, setShowRegister] = useState(false); // Toggle between login and register
+  const [showRegister, setShowRegister] = useState(false);
 
   return (
-    <div>
+    <div className="app-container">
       {!user ? (
         <>
           {showRegister ? (
-            <Register setUser={setUser} />
+            <Register setUser={setUser} setShowRegister={setShowRegister} />
           ) : (
-            <Login setUser={setUser} />
+            <Login setUser={setUser} setShowRegister={setShowRegister} />
           )}
-
-          <p>
-            {showRegister ? (
-              <>
-                Already have an account?{" "}
-                <a href="#login" onClick={() => setShowRegister(false)}>
-                  Login
-                </a>
-              </>
-            ) : (
-              <>
-                Don't have an account?{" "}
-                <a href="#register" onClick={() => setShowRegister(true)}>
-                  Register
-                </a>
-              </>
-            )}
-          </p>
         </>
       ) : (
         <>
@@ -44,7 +25,7 @@ const App = () => {
             onClick={() => {
               setUser(null);
               localStorage.removeItem("token");
-              auth.signOut(); // Correct usage of auth.signOut()
+              auth.signOut();
             }}
           >
             Log Out

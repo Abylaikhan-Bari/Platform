@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { auth } from "./firebase";  // Correctly import Firebase Auth
+import { auth } from "./firebase"; 
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import './Auth.css';
 
-const Register = ({ setUser }) => {
+const Register = ({ setUser, setShowRegister }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault(); // Prevent form submission
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const currentUser = auth.currentUser;
@@ -15,29 +17,36 @@ const Register = ({ setUser }) => {
       const token = await currentUser.getIdToken();
       localStorage.setItem("token", token);  // Store Firebase token
     } catch (error) {
-      setError(error.message); // Handle errors
+      setError(error.message);
     }
   };
 
   return (
-    <div>
+    <div className="auth-container">
       <h2>Register</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={(e) => e.preventDefault()}>
+      {error && <p className="error">{error}</p>}
+      <form className="auth-form" onSubmit={handleRegister}>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        <button onClick={handleRegister}>Register</button>
+        <button type="submit" className="auth-btn">Register</button>
       </form>
+
+      <p>
+        Already have an account?{" "}
+        <button onClick={() => setShowRegister(false)} className="link-btn">Login here</button>
+      </p>
     </div>
   );
 };
