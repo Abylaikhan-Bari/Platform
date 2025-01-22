@@ -3,7 +3,7 @@ const router = express.Router();
 const Book = require("../models/Book");
 const auth = require("../middleware/auth");
 
-// Create a Book
+// Create a Book (Protected Route)
 router.post("/", auth, async (req, res) => {
     try {
         const { title, author, content } = req.body;
@@ -15,7 +15,7 @@ router.post("/", auth, async (req, res) => {
     }
 });
 
-// Get All Books
+// Get All Books (Protected Route)
 router.get("/", auth, async (req, res) => {
     try {
         const books = await Book.find();
@@ -25,7 +25,7 @@ router.get("/", auth, async (req, res) => {
     }
 });
 
-// Update a Book
+// Update a Book (Protected Route)
 router.put("/:id", auth, async (req, res) => {
     try {
         const { id } = req.params;
@@ -36,7 +36,7 @@ router.put("/:id", auth, async (req, res) => {
     }
 });
 
-// Delete a Book
+// Delete a Book (Protected Route)
 router.delete("/:id", auth, async (req, res) => {
     try {
         const { id } = req.params;
