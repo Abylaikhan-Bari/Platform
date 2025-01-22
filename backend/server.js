@@ -1,14 +1,16 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
-const authRoutes = require('./routes/auth'); // Check this line
-const bookRoutes = require('./routes/books'); // Check this line
+const authRoutes = require('./routes/auth');  // Authentication routes
+const bookRoutes = require('./routes/books'); // Books CRUD routes
 
 dotenv.config();
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(cors());
 
