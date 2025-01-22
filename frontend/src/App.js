@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Register from "./Register";
 import Login from "./Login";  // Import the Login component
 import BooksList from "./BooksList";
+import { auth } from "./firebase";  // Correctly import Firebase auth
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -43,7 +44,7 @@ const App = () => {
             onClick={() => {
               setUser(null);
               localStorage.removeItem("token");
-              auth.signOut();
+              auth.signOut(); // Correct usage of auth.signOut()
             }}
           >
             Log Out
