@@ -8,8 +8,6 @@ const BooksList = () => {
     const fetchBooks = async () => {
         const token = localStorage.getItem("token"); // Retrieve token from localStorage
 
-        console.log("Token retrieved from localStorage:", token);  // Debugging log
-
         if (!token) {
             setError("Unauthorized: Please log in first");
             return;
@@ -18,20 +16,14 @@ const BooksList = () => {
         try {
             const response = await axios.get("http://localhost:5000/api/books", {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Send token in Authorization header
+                    Authorization: `Bearer ${token}`, // Send the token in Authorization header
                 },
             });
 
-            console.log("Books fetched:", response.data);  // Debugging log for books
-
             setBooks(response.data);
         } catch (err) {
-            console.error("Error fetching books:", err);  // Debugging log for errors
-            if (err.response && err.response.data) {
-                setError(err.response.data.message || "Failed to fetch books");
-            } else {
-                setError("Failed to fetch books: Server error or invalid token");
-            }
+            console.error("Error fetching books:", err);
+            setError("Failed to fetch books: Server error or invalid token");
         }
     };
 
