@@ -7,7 +7,7 @@ node_modules/
 # Firebase admin SDK JSON key (sensitive file)
 platform-780bc-firebase-adminsdk-fbsvc-3fd79abd38.json
 firebase.js
-
+qodana.yaml
 # Logs
 logs/
 *.log
