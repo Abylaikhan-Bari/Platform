@@ -26,9 +26,12 @@ const App = () => {
   }, []);
 
   const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem("token");
-    auth.signOut();
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      setUser(null);
+      localStorage.removeItem("token");
+      auth.signOut();
+    }
   };
 
   if (loading) {
