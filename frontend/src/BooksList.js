@@ -5,7 +5,7 @@ import "./BooksList.css";
 const BooksList = () => {
     const [books, setBooks] = useState([]);
     const [newBook, setNewBook] = useState({ title: "", author: "", content: "" });
-    const [editingBook, setEditingBook] = useState(null); // For editing a book
+    const [editingBook, setEditingBook] = useState(null);
     const [error, setError] = useState("");
 
     // Fetch books from the server
@@ -15,7 +15,6 @@ const BooksList = () => {
             setError("Unauthorized: Please log in first");
             return;
         }
-
         try {
             const response = await axios.get("http://localhost:5000/api/books", {
                 headers: { Authorization: `Bearer ${token}` },
@@ -26,14 +25,12 @@ const BooksList = () => {
         }
     };
 
-    // Create a new book
     const handleCreateBook = async () => {
         const token = localStorage.getItem("token");
         if (!token) {
             setError("Unauthorized: Please log in first");
             return;
         }
-
         try {
             const response = await axios.post("http://localhost:5000/api/books", newBook, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -45,14 +42,12 @@ const BooksList = () => {
         }
     };
 
-    // Update a book
     const handleUpdateBook = async () => {
         const token = localStorage.getItem("token");
         if (!token || !editingBook) {
             setError("Unauthorized: Please log in first");
             return;
         }
-
         try {
             const response = await axios.put(
                 `http://localhost:5000/api/books/${editingBook._id}`,
@@ -60,23 +55,20 @@ const BooksList = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setBooks(books.map((book) => (book._id === editingBook._id ? response.data : book)));
-            setEditingBook(null); // Close modal
+            setEditingBook(null);
         } catch (err) {
             setError("Failed to update book: " + err.message);
         }
     };
 
-    // Delete a book
     const handleDeleteBook = async (id) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this book?");
         if (!confirmDelete) return;
-
         const token = localStorage.getItem("token");
         if (!token) {
             setError("Unauthorized: Please log in first");
             return;
         }
-
         try {
             await axios.delete(`http://localhost:5000/api/books/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -115,23 +107,30 @@ const BooksList = () => {
                     value={newBook.content}
                     onChange={(e) => setNewBook({ ...newBook, content: e.target.value })}
                 />
-                <button onClick={handleCreateBook}>Create Book</button>
+                <button className="btn-primary" onClick={handleCreateBook}>
+                    Create Book
+                </button>
             </div>
 
-            <ul>
+            <div className="books-list">
                 {books.length > 0 ? (
                     books.map((book) => (
-                        <li key={book._id} className="book-item">
-                            <strong>{book.title}</strong> - {book.author}
+                        <div key={book._id} className="book-card">
+                            <h3>{book.title}</h3>
+                            <p><strong>Author:</strong> {book.author}</p>
                             <p>{book.content}</p>
-                            <button onClick={() => setEditingBook(book)}>Edit</button>
-                            <button onClick={() => handleDeleteBook(book._id)}>Delete</button>
-                        </li>
+                            <button className="btn-secondary" onClick={() => setEditingBook(book)}>
+                                Edit
+                            </button>
+                            <button className="btn-danger" onClick={() => handleDeleteBook(book._id)}>
+                                Delete
+                            </button>
+                        </div>
                     ))
                 ) : (
                     <p>No books available.</p>
                 )}
-            </ul>
+            </div>
 
             {editingBook && (
                 <div className="modal">
@@ -154,8 +153,12 @@ const BooksList = () => {
                             value={editingBook.content}
                             onChange={(e) => setEditingBook({ ...editingBook, content: e.target.value })}
                         />
-                        <button onClick={handleUpdateBook}>Save Changes</button>
-                        <button onClick={() => setEditingBook(null)}>Cancel</button>
+                        <button className="btn-primary" onClick={handleUpdateBook}>
+                            Save Changes
+                        </button>
+                        <button className="btn-secondary" onClick={() => setEditingBook(null)}>
+                            Cancel
+                        </button>
                     </div>
                 </div>
             )}
