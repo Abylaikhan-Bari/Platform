@@ -5,6 +5,7 @@ const connectDB = require('./config/connectDB'); // Import the DB connection fun
 
 const authRoutes = require('./routes/auth');  // Authentication routes
 const bookRoutes = require('./routes/books'); // Books CRUD routes
+const roleRoutes = require('./routes/role');  // Role assignment routes
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ connectDB();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
+app.use('/api/roles', roleRoutes); // Register the new route
 
 const PORT = process.env.PORT || 5000;
 
