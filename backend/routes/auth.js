@@ -16,25 +16,25 @@ router.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Check if user exists
+        // Check if user already exists
         const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
-        }
+        if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-        // Register user with Firebase (using email and password)
+        // Register user in Firebase
         const userRecord = await admin.auth().createUser({
-            email: username,  // Use email for username
+            email: username,
             password,
         });
 
-        // Save the Firebase UID to MongoDB
+        // Save user in MongoDB
         const newUser = new User({
             username,
             firebaseUID: userRecord.uid,
         });
-
         await newUser.save();
+
+        // Assign default role using custom claims
+        await admin.auth().setCustomUserClaims(userRecord.uid, { role: "user" });
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
@@ -42,6 +42,7 @@ router.post("/register", async (req, res) => {
         res.status(500).json({ message: "Server error during registration" });
     }
 });
+
 
 // User Login (using Firebase authentication)
 router.post("/login", async (req, res) => {

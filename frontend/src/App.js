@@ -7,21 +7,24 @@ import './App.css';
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(""); // Store user's role
   const [showRegister, setShowRegister] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
 
   // Check for a token and set the user on app initialization
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      auth.onAuthStateChanged((currentUser) => {
+      auth.onAuthStateChanged(async (currentUser) => {
         if (currentUser) {
-          setUser(currentUser); // Set authenticated user
+          const tokenResult = await currentUser.getIdTokenResult();
+          setRole(tokenResult.claims.role || "user"); // Set role from token claims
+          setUser(currentUser);
         }
-        setLoading(false); // Finish loading
+        setLoading(false);
       });
     } else {
-      setLoading(false); // No token, finish loading
+      setLoading(false);
     }
   }, []);
 
@@ -30,12 +33,12 @@ const App = () => {
     if (confirmLogout) {
       setUser(null);
       localStorage.removeItem("token");
+      setRole("");
       auth.signOut();
     }
   };
 
   if (loading) {
-    // Show a loader while verifying the user's authentication state
     return <div className="loader">Loading...</div>;
   }
 
@@ -46,12 +49,12 @@ const App = () => {
               {showRegister ? (
                   <Register setUser={setUser} setShowRegister={setShowRegister} />
               ) : (
-                  <Login setUser={setUser} setShowRegister={setShowRegister} />
+                  <Login setUser={setUser} setRole={setRole} setShowRegister={setShowRegister} />
               )}
             </>
         ) : (
             <>
-              <BooksList />
+              <BooksList role={role} />
               <button onClick={handleLogout}>Log Out</button>
             </>
         )}

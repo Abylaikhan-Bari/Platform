@@ -2,19 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./BooksList.css";
 
-const BooksList = () => {
+const BooksList = ({ role }) => {
     const [books, setBooks] = useState([]);
     const [newBook, setNewBook] = useState({ title: "", author: "", content: "" });
     const [editingBook, setEditingBook] = useState(null);
     const [error, setError] = useState("");
 
-    // Fetch books from the server
     const fetchBooks = async () => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Unauthorized: Please log in first");
-            return;
-        }
         try {
             const response = await axios.get("http://localhost:5000/api/books", {
                 headers: { Authorization: `Bearer ${token}` },
@@ -27,10 +22,6 @@ const BooksList = () => {
 
     const handleCreateBook = async () => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Unauthorized: Please log in first");
-            return;
-        }
         try {
             const response = await axios.post("http://localhost:5000/api/books", newBook, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -44,10 +35,6 @@ const BooksList = () => {
 
     const handleUpdateBook = async () => {
         const token = localStorage.getItem("token");
-        if (!token || !editingBook) {
-            setError("Unauthorized: Please log in first");
-            return;
-        }
         try {
             const response = await axios.put(
                 `http://localhost:5000/api/books/${editingBook._id}`,
@@ -64,11 +51,8 @@ const BooksList = () => {
     const handleDeleteBook = async (id) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this book?");
         if (!confirmDelete) return;
+
         const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Unauthorized: Please log in first");
-            return;
-        }
         try {
             await axios.delete(`http://localhost:5000/api/books/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -88,29 +72,29 @@ const BooksList = () => {
             <h1>Books List</h1>
             {error && <p className="error">{error}</p>}
 
-            <div className="form-container">
-                <h2>Create a New Book</h2>
-                <input
-                    type="text"
-                    placeholder="Title"
-                    value={newBook.title}
-                    onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
-                />
-                <input
-                    type="text"
-                    placeholder="Author"
-                    value={newBook.author}
-                    onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
-                />
-                <textarea
-                    placeholder="Content"
-                    value={newBook.content}
-                    onChange={(e) => setNewBook({ ...newBook, content: e.target.value })}
-                />
-                <button className="btn-primary" onClick={handleCreateBook}>
-                    Create Book
-                </button>
-            </div>
+            {role === "admin" && (
+                <div className="form-container">
+                    <h2>Create a New Book</h2>
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={newBook.title}
+                        onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Author"
+                        value={newBook.author}
+                        onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
+                    />
+                    <textarea
+                        placeholder="Content"
+                        value={newBook.content}
+                        onChange={(e) => setNewBook({ ...newBook, content: e.target.value })}
+                    />
+                    <button className="btn-primary" onClick={handleCreateBook}>Create Book</button>
+                </div>
+            )}
 
             <div className="books-list">
                 {books.length > 0 ? (
@@ -119,12 +103,12 @@ const BooksList = () => {
                             <h3>{book.title}</h3>
                             <p><strong>Author:</strong> {book.author}</p>
                             <p>{book.content}</p>
-                            <button className="btn-secondary" onClick={() => setEditingBook(book)}>
-                                Edit
-                            </button>
-                            <button className="btn-danger" onClick={() => handleDeleteBook(book._id)}>
-                                Delete
-                            </button>
+                            {role === "admin" && (
+                                <>
+                                    <button className="btn-secondary" onClick={() => setEditingBook(book)}>Edit</button>
+                                    <button className="btn-danger" onClick={() => handleDeleteBook(book._id)}>Delete</button>
+                                </>
+                            )}
                         </div>
                     ))
                 ) : (
@@ -153,12 +137,8 @@ const BooksList = () => {
                             value={editingBook.content}
                             onChange={(e) => setEditingBook({ ...editingBook, content: e.target.value })}
                         />
-                        <button className="btn-primary" onClick={handleUpdateBook}>
-                            Save Changes
-                        </button>
-                        <button className="btn-secondary" onClick={() => setEditingBook(null)}>
-                            Cancel
-                        </button>
+                        <button className="btn-primary" onClick={handleUpdateBook}>Save Changes</button>
+                        <button className="btn-secondary" onClick={() => setEditingBook(null)}>Cancel</button>
                     </div>
                 </div>
             )}
