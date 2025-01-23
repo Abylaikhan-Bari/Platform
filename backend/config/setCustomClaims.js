@@ -1,6 +1,5 @@
-const admin = require("./firebase-admin"); // Reuse your Firebase Admin initialization
+const admin = require("./firebase-admin"); // Reuse Firebase Admin initialization
 
-// Function to assign custom claims
 const setCustomClaims = async (uid, role) => {
     try {
         await admin.auth().setCustomUserClaims(uid, { role });
@@ -10,7 +9,8 @@ const setCustomClaims = async (uid, role) => {
     }
 };
 
-// Example: Set role for a user
-const uid = "YWeVfGgmrWOVoJx00r3eW6qgUfD3"; // Replace this with the actual UID of the user
-const role = "admin"; // Replace with the desired role (e.g., 'admin', 'user')
-setCustomClaims(uid, role);
+const uid = "YWeVfGgmrWOVoJx00r3eW6qgUfD3"; // Example UID
+const role = "admin"; // Role to assign
+setCustomClaims(uid, role)
+    .then(() => console.log("Custom claims set successfully."))
+    .catch((error) => console.error("Error setting custom claims:", error));
