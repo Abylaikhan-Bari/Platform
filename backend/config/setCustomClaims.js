@@ -10,7 +10,8 @@ const setCustomClaims = async (uid, role) => {
 };
 //wuz5rpPQsHUUG0lzhMBY4K9G8eB2
 //YWeVfGgmrWOVoJx00r3eW6qgUfD3
-const uid = "wuz5rpPQsHUUG0lzhMBY4K9G8eB2"; // Example UID
+//qQAhA6TLdvan75Zd0yrvF3keVFo2
+const uid = "qQAhA6TLdvan75Zd0yrvF3keVFo2"; // Example UID
 const role = "admin"; // Role to assign
 setCustomClaims(uid, role)
     .then(() => console.log("Custom claims set successfully."))
