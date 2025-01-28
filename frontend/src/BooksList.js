@@ -11,7 +11,7 @@ const BooksList = ({ role }) => {
     const fetchBooks = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.get("http://localhost:5001/api/books", {
+            const response = await axios.get("http://192.168.0.31:5001/api/books", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks(response.data);
@@ -23,7 +23,7 @@ const BooksList = ({ role }) => {
     const handleCreateBook = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.post("http://localhost:5001/api/books", newBook, {
+            const response = await axios.post("http://192.168.0.31:5001/api/books", newBook, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks([...books, response.data]);
@@ -32,6 +32,7 @@ const BooksList = ({ role }) => {
             setError("Failed to create book: " + err.message);
         }
     };
+
 
     const handleUpdateBook = async () => {
         const token = localStorage.getItem("token");

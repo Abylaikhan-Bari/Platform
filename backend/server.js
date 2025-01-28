@@ -24,4 +24,5 @@ app.use('/api/roles', roleRoutes); // Register the new route
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Change the bind address to 0.0.0.0 to allow connections from other devices
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
