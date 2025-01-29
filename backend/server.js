@@ -12,11 +12,12 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-    origin: ['http://localhost:3000', 'http://192.168.0.31:5001'], // Flutter's IP
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-})); // Allow all origins
+// app.use(cors({
+//     origin: ['http://localhost:3000', 'http://192.168.0.31:5001', 'http://192.168.0.31:3000/'],
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     credentials: true,
+// })); // Allow all origins
+app.use(cors());
 
 // Connect to MongoDB
 connectDB();

@@ -2,18 +2,24 @@ const admin = require("firebase-admin");
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.header("Authorization");
+        const authHeader = req.headers["authorization"];
 
-        if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
+        // Check if Authorization header exists and starts with 'Bearer'
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "Unauthorized: No token provided" });
         }
 
+        // Extract the Firebase token
+        const token = authHeader.split(" ")[1];
+
         // Verify the Firebase JWT token
-        const decoded = await admin.auth().verifyIdToken(token.replace("Bearer ", ""));
-        req.user = decoded; // Attach user info to the request object
-        next();
+        const decodedToken = await admin.auth().verifyIdToken(token);
+
+        req.user = decodedToken; // Attach user info to request object
+        next(); // Proceed to the next middleware
     } catch (err) {
-        res.status(401).json({ message: "Invalid or expired token" });
+        console.error("Authentication Error:", err);
+        res.status(401).json({ message: "Invalid or expired token", error: err.message });
     }
 };
 
