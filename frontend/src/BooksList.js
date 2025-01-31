@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { auth } from "./config/firebase"; // Import Firebase auth
 import "./styles/BooksList.css";
 
 const BooksList = ({ role, onLogout }) => {
@@ -10,9 +11,11 @@ const BooksList = ({ role, onLogout }) => {
     const [error, setError] = useState("");
     const [showDialog, setShowDialog] = useState(false);
     const [dialogType, setDialogType] = useState(""); // 'add', 'edit', 'delete'
+    const [userEmail, setUserEmail] = useState("");
 
     useEffect(() => {
         fetchBooks();
+        fetchUserEmail();
     }, []);
 
     const fetchBooks = async () => {
@@ -24,6 +27,13 @@ const BooksList = ({ role, onLogout }) => {
             setBooks(response.data);
         } catch (err) {
             setError("Failed to fetch books: " + err.message);
+        }
+    };
+
+    const fetchUserEmail = () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setUserEmail(currentUser.email);
         }
     };
 
@@ -79,6 +89,8 @@ const BooksList = ({ role, onLogout }) => {
                     <span role="img" aria-label="Book Emoji">📚</span> Book Store
                 </h1>
                 <nav>
+                    <span className="user-email">{userEmail}</span>
+                    <span className="spacer"></span> {/* Add a small space */}
                     <button className="logout-btn" onClick={onLogout}>Logout</button>
                 </nav>
             </header>
@@ -90,14 +102,12 @@ const BooksList = ({ role, onLogout }) => {
                 </h2>
                 {error && <p className="error-message">{error}</p>}
 
-                {/* Admin Add Book Button */}
                 {role === "admin" && (
                     <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
                         <span role="img" aria-label="Plus Sign">➕</span> Add Book
                     </button>
                 )}
 
-                {/* Book Cards Display */}
                 <div className="books-grid">
                     {books.length > 0 ? (
                         books.map((book) => (

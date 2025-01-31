@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Register from "./Register";
 import Login from "./Login";
 import BooksList from "./BooksList";
-import { auth } from "./firebase";
+import { auth } from "./config/firebase";
 import "./styles/App.css";
 
 const App = () => {
