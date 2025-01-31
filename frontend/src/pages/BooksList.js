@@ -12,6 +12,7 @@ const BooksList = ({ role, onLogout }) => {
     const [showDialog, setShowDialog] = useState(false);
     const [dialogType, setDialogType] = useState(""); // 'add', 'edit', 'delete'
     const [userEmail, setUserEmail] = useState("");
+    const [tokenExpired, setTokenExpired] = useState(false);
 
     useEffect(() => {
         fetchBooks();
@@ -20,13 +21,24 @@ const BooksList = ({ role, onLogout }) => {
 
     const fetchBooks = async () => {
         const token = localStorage.getItem("token");
+        if (!token) {
+            setTokenExpired(true);
+            return;
+        }
+
         try {
             const response = await axios.get("http://192.168.0.31:5001/api/books", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks(response.data);
         } catch (err) {
-            setError("Failed to fetch books: " + err.message);
+            if (err.response && err.response.status === 401) {
+                setTokenExpired(true);
+                localStorage.removeItem("token");
+                auth.signOut();
+            } else {
+                setError("Failed to fetch books: " + err.message);
+            }
         }
     };
 
@@ -89,8 +101,8 @@ const BooksList = ({ role, onLogout }) => {
                     <span role="img" aria-label="Book Emoji">📚</span> Book Store
                 </h1>
                 <nav>
-                    <span className="user-email">{userEmail}</span>
-                    <span className="spacer"></span> {/* Add a small space */}
+                    {userEmail && <span className="user-email">{userEmail}</span>}
+                    <span className="spacer"> </span>
                     <button className="logout-btn" onClick={onLogout}>Logout</button>
                 </nav>
             </header>
@@ -100,37 +112,47 @@ const BooksList = ({ role, onLogout }) => {
                 <h2>
                     <span role="img" aria-label="Open Book Emoji">📖</span> Available Books
                 </h2>
-                {error && <p className="error-message">{error}</p>}
 
-                {role === "admin" && (
-                    <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
-                        <span role="img" aria-label="Plus Sign">➕</span> Add Book
-                    </button>
-                )}
+                {tokenExpired ? (
+                    <div className="auth-error">
+                        <p>Your session has expired. Please sign in again.</p>
+                        <button className="btn-primary" onClick={() => window.location.reload()}>Go to Login</button>
+                    </div>
+                ) : (
+                    <>
+                        {error && <p className="error-message">{error}</p>}
 
-                <div className="books-grid">
-                    {books.length > 0 ? (
-                        books.map((book) => (
-                            <div key={book._id} className="book-card">
-                                <h3>{book.title}</h3>
-                                <p><strong>Author:</strong> {book.author}</p>
-                                <p>{book.content}</p>
-                                {role === "admin" && (
-                                    <div className="admin-actions">
-                                        <button className="btn-secondary" onClick={() => { setEditingBook(book); setDialogType("edit"); setShowDialog(true); }}>
-                                            <span role="img" aria-label="Pencil">✏️</span> Edit
-                                        </button>
-                                        <button className="btn-danger" onClick={() => { setBookToDelete(book); setDialogType("delete"); setShowDialog(true); }}>
-                                            <span role="img" aria-label="Trash Bin">🗑</span> Delete
-                                        </button>
+                        {role === "admin" && (
+                            <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
+                                <span role="img" aria-label="Plus Sign">➕</span> Add Book
+                            </button>
+                        )}
+
+                        <div className="books-grid">
+                            {books.length > 0 ? (
+                                books.map((book) => (
+                                    <div key={book._id} className="book-card">
+                                        <h3>{book.title}</h3>
+                                        <p><strong>Author:</strong> {book.author}</p>
+                                        <p>{book.content}</p>
+                                        {role === "admin" && (
+                                            <div className="admin-actions">
+                                                <button className="btn-secondary" onClick={() => { setEditingBook(book); setDialogType("edit"); setShowDialog(true); }}>
+                                                    <span role="img" aria-label="Pencil">✏️</span> Edit
+                                                </button>
+                                                <button className="btn-danger" onClick={() => { setBookToDelete(book); setDialogType("delete"); setShowDialog(true); }}>
+                                                    <span role="img" aria-label="Trash Bin">🗑</span> Delete
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <p className="empty-message">No books available.</p>
-                    )}
-                </div>
+                                ))
+                            ) : (
+                                <p className="empty-message">No books available.</p>
+                            )}
+                        </div>
+                    </>
+                )}
             </main>
 
             {/* 🔹 FOOTER */}
