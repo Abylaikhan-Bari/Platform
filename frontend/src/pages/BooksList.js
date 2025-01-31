@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { auth } from "./config/firebase"; // Import Firebase auth
-import "./styles/BooksList.css";
+import { auth } from "../config/firebase"; // Import Firebase auth
+import "../styles/BooksList.css";
 
 const BooksList = ({ role, onLogout }) => {
     const [books, setBooks] = useState([]);
