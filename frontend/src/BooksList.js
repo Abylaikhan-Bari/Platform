@@ -75,7 +75,9 @@ const BooksList = ({ role, onLogout }) => {
         <div className="books-page">
             {/* 🔹 HEADER */}
             <header className="header">
-                <h1>📚 Book Store</h1>
+                <h1>
+                    <span role="img" aria-label="Book Emoji">📚</span> Book Store
+                </h1>
                 <nav>
                     <button className="logout-btn" onClick={onLogout}>Logout</button>
                 </nav>
@@ -83,13 +85,15 @@ const BooksList = ({ role, onLogout }) => {
 
             {/* 🔹 MAIN CONTENT */}
             <main className="main-content">
-                <h2>📖 Available Books</h2>
+                <h2>
+                    <span role="img" aria-label="Open Book Emoji">📖</span> Available Books
+                </h2>
                 {error && <p className="error-message">{error}</p>}
 
                 {/* Admin Add Book Button */}
                 {role === "admin" && (
                     <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
-                        ➕ Add Book
+                        <span role="img" aria-label="Plus Sign">➕</span> Add Book
                     </button>
                 )}
 
@@ -103,8 +107,12 @@ const BooksList = ({ role, onLogout }) => {
                                 <p>{book.content}</p>
                                 {role === "admin" && (
                                     <div className="admin-actions">
-                                        <button className="btn-secondary" onClick={() => { setEditingBook(book); setDialogType("edit"); setShowDialog(true); }}>✏️ Edit</button>
-                                        <button className="btn-danger" onClick={() => { setBookToDelete(book); setDialogType("delete"); setShowDialog(true); }}>🗑 Delete</button>
+                                        <button className="btn-secondary" onClick={() => { setEditingBook(book); setDialogType("edit"); setShowDialog(true); }}>
+                                            <span role="img" aria-label="Pencil">✏️</span> Edit
+                                        </button>
+                                        <button className="btn-danger" onClick={() => { setBookToDelete(book); setDialogType("delete"); setShowDialog(true); }}>
+                                            <span role="img" aria-label="Trash Bin">🗑</span> Delete
+                                        </button>
                                     </div>
                                 )}
                             </div>
