@@ -3,13 +3,14 @@ import Register from "./Register";
 import Login from "./Login";
 import BooksList from "./BooksList";
 import { auth } from "./firebase";
-import './App.css';
+import "./styles/App.css";
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(""); // Store user's role
   const [showRegister, setShowRegister] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   // Check for a token and set the user on app initialization
   useEffect(() => {
@@ -29,13 +30,11 @@ const App = () => {
   }, []);
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    if (confirmLogout) {
-      setUser(null);
-      localStorage.removeItem("token");
-      setRole("");
-      auth.signOut();
-    }
+    setUser(null);
+    localStorage.removeItem("token");
+    setRole("");
+    auth.signOut();
+    setShowLogoutDialog(false);
   };
 
   if (loading) {
@@ -54,9 +53,19 @@ const App = () => {
             </>
         ) : (
             <>
-              <BooksList role={role} />
-              <button onClick={handleLogout}>Log Out</button>
+              <BooksList role={role} onLogout={() => setShowLogoutDialog(true)} />
             </>
+        )}
+
+        {/* Logout Confirmation Modal */}
+        {showLogoutDialog && (
+            <dialog className="dialog" open>
+              <div className="dialog-content">
+                <h2>Are you sure you want to log out?</h2>
+                <button className="btn-danger" onClick={handleLogout}>Yes, Log Out</button>
+                <button className="btn-secondary1" onClick={() => setShowLogoutDialog(false)}>Cancel</button>
+              </div>
+            </dialog>
         )}
       </div>
   );

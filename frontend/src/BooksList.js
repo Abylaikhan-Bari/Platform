@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./BooksList.css";
+import "./styles/BooksList.css";
 
-const BooksList = ({ role }) => {
+const BooksList = ({ role, onLogout }) => {
     const [books, setBooks] = useState([]);
     const [newBook, setNewBook] = useState({ title: "", author: "", content: "" });
     const [editingBook, setEditingBook] = useState(null);
+    const [bookToDelete, setBookToDelete] = useState(null);
     const [error, setError] = useState("");
+    const [showDialog, setShowDialog] = useState(false);
+    const [dialogType, setDialogType] = useState(""); // 'add', 'edit', 'delete'
+
+    useEffect(() => {
+        fetchBooks();
+    }, []);
 
     const fetchBooks = async () => {
         const token = localStorage.getItem("token");
@@ -28,11 +35,11 @@ const BooksList = ({ role }) => {
             });
             setBooks([...books, response.data]);
             setNewBook({ title: "", author: "", content: "" });
+            setShowDialog(false);
         } catch (err) {
             setError("Failed to create book: " + err.message);
         }
     };
-
 
     const handleUpdateBook = async () => {
         const token = localStorage.getItem("token");
@@ -44,104 +51,120 @@ const BooksList = ({ role }) => {
             );
             setBooks(books.map((book) => (book._id === editingBook._id ? response.data : book)));
             setEditingBook(null);
+            setShowDialog(false);
         } catch (err) {
             setError("Failed to update book: " + err.message);
         }
     };
 
-    const handleDeleteBook = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this book?");
-        if (!confirmDelete) return;
-
+    const handleDeleteBook = async () => {
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://192.168.0.31:5001/api/books/${id}`, {
+            await axios.delete(`http://192.168.0.31:5001/api/books/${bookToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setBooks(books.filter((book) => book._id !== id));
+            setBooks(books.filter((book) => book._id !== bookToDelete._id));
+            setBookToDelete(null);
+            setShowDialog(false);
         } catch (err) {
             setError("Failed to delete book: " + err.message);
         }
     };
 
-    useEffect(() => {
-        fetchBooks();
-    }, []);
-
     return (
-        <div className="books-container">
-            <h1>Books List</h1>
-            {error && <p className="error">{error}</p>}
+        <div className="books-page">
+            {/* 🔹 HEADER */}
+            <header className="header">
+                <h1>📚 Book Store</h1>
+                <nav>
+                    <button className="logout-btn" onClick={onLogout}>Logout</button>
+                </nav>
+            </header>
 
-            {role === "admin" && (
-                <div className="form-container">
-                    <h2>Create a New Book</h2>
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        value={newBook.title}
-                        onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Author"
-                        value={newBook.author}
-                        onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
-                    />
-                    <textarea
-                        placeholder="Content"
-                        value={newBook.content}
-                        onChange={(e) => setNewBook({ ...newBook, content: e.target.value })}
-                    />
-                    <button className="btn-primary" onClick={handleCreateBook}>Create Book</button>
-                </div>
-            )}
+            {/* 🔹 MAIN CONTENT */}
+            <main className="main-content">
+                <h2>📖 Available Books</h2>
+                {error && <p className="error-message">{error}</p>}
 
-            <div className="books-list">
-                {books.length > 0 ? (
-                    books.map((book) => (
-                        <div key={book._id} className="book-card">
-                            <h3>{book.title}</h3>
-                            <p><strong>Author:</strong> {book.author}</p>
-                            <p>{book.content}</p>
-                            {role === "admin" && (
-                                <>
-                                    <button className="btn-secondary" onClick={() => setEditingBook(book)}>Edit</button>
-                                    <button className="btn-danger" onClick={() => handleDeleteBook(book._id)}>Delete</button>
-                                </>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p>No books available.</p>
+                {/* Admin Add Book Button */}
+                {role === "admin" && (
+                    <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
+                        ➕ Add Book
+                    </button>
                 )}
-            </div>
 
-            {editingBook && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Edit Book</h2>
-                        <input
-                            type="text"
-                            placeholder="Title"
-                            value={editingBook.title}
-                            onChange={(e) => setEditingBook({ ...editingBook, title: e.target.value })}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Author"
-                            value={editingBook.author}
-                            onChange={(e) => setEditingBook({ ...editingBook, author: e.target.value })}
-                        />
-                        <textarea
-                            placeholder="Content"
-                            value={editingBook.content}
-                            onChange={(e) => setEditingBook({ ...editingBook, content: e.target.value })}
-                        />
-                        <button className="btn-primary" onClick={handleUpdateBook}>Save Changes</button>
-                        <button className="btn-secondary" onClick={() => setEditingBook(null)}>Cancel</button>
-                    </div>
+                {/* Book Cards Display */}
+                <div className="books-grid">
+                    {books.length > 0 ? (
+                        books.map((book) => (
+                            <div key={book._id} className="book-card">
+                                <h3>{book.title}</h3>
+                                <p><strong>Author:</strong> {book.author}</p>
+                                <p>{book.content}</p>
+                                {role === "admin" && (
+                                    <div className="admin-actions">
+                                        <button className="btn-secondary" onClick={() => { setEditingBook(book); setDialogType("edit"); setShowDialog(true); }}>✏️ Edit</button>
+                                        <button className="btn-danger" onClick={() => { setBookToDelete(book); setDialogType("delete"); setShowDialog(true); }}>🗑 Delete</button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="empty-message">No books available.</p>
+                    )}
                 </div>
+            </main>
+
+            {/* 🔹 FOOTER */}
+            <footer className="footer">
+                <p>© 2025 Book Store. All rights reserved.</p>
+            </footer>
+
+            {/* 🔹 DIALOG WINDOW FOR ADD/EDIT/DELETE BOOK */}
+            {showDialog && (
+                <dialog className="dialog" open>
+                    <div className="dialog-content">
+                        {dialogType === "delete" ? (
+                            <>
+                                <h2>Are you sure you want to delete?</h2>
+                                <p><strong>Title:</strong> {bookToDelete?.title}</p>
+                                <p><strong>Author:</strong> {bookToDelete?.author}</p>
+                                <button className="btn-danger" onClick={handleDeleteBook}>Yes, Delete</button>
+                            </>
+                        ) : (
+                            <>
+                                <h2>{dialogType === "edit" ? "Edit Book" : "Add New Book"}</h2>
+                                <input
+                                    type="text"
+                                    placeholder="Title"
+                                    value={dialogType === "edit" ? editingBook.title : newBook.title}
+                                    onChange={(e) => dialogType === "edit"
+                                        ? setEditingBook({ ...editingBook, title: e.target.value })
+                                        : setNewBook({ ...newBook, title: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Author"
+                                    value={dialogType === "edit" ? editingBook.author : newBook.author}
+                                    onChange={(e) => dialogType === "edit"
+                                        ? setEditingBook({ ...editingBook, author: e.target.value })
+                                        : setNewBook({ ...newBook, author: e.target.value })}
+                                />
+                                <textarea
+                                    placeholder="Content"
+                                    value={dialogType === "edit" ? editingBook.content : newBook.content}
+                                    onChange={(e) => dialogType === "edit"
+                                        ? setEditingBook({ ...editingBook, content: e.target.value })
+                                        : setNewBook({ ...newBook, content: e.target.value })}
+                                />
+                                <button className="btn-primary" onClick={dialogType === "edit" ? handleUpdateBook : handleCreateBook}>
+                                    {dialogType === "edit" ? "Save Changes" : "Add Book"}
+                                </button>
+                            </>
+                        )}
+                        <button className="btn-secondary" onClick={() => { setShowDialog(false); setEditingBook(null); setBookToDelete(null); }}>Cancel</button>
+                    </div>
+                </dialog>
             )}
         </div>
     );
