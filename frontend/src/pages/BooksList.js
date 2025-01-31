@@ -98,7 +98,7 @@ const BooksList = ({ role, onLogout }) => {
             {/* 🔹 HEADER */}
             <header className="header">
                 <h1>
-                    <span role="img" aria-label="Book Emoji">📚</span> Book Store
+                    <span role="img" aria-label="Book Emoji">📚</span> Books
                 </h1>
                 <nav>
                     {userEmail && <span className="user-email">{userEmail}</span>}
@@ -157,7 +157,7 @@ const BooksList = ({ role, onLogout }) => {
 
             {/* 🔹 FOOTER */}
             <footer className="footer">
-                <p>© 2025 Book Store. All rights reserved.</p>
+                <p>© 2025 Books. All rights reserved.</p>
             </footer>
 
             {/* 🔹 DIALOG WINDOW FOR ADD/EDIT/DELETE BOOK */}
