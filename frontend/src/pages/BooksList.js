@@ -27,7 +27,7 @@ const BooksList = ({ role, onLogout }) => {
         }
 
         try {
-            const response = await axios.get("http://192.168.0.31:5001/api/books", {
+            const response = await axios.get("http://192.168.0.24:5001/api/books", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks(response.data);
@@ -52,7 +52,7 @@ const BooksList = ({ role, onLogout }) => {
     const handleCreateBook = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await axios.post("http://192.168.0.31:5001/api/books", newBook, {
+            const response = await axios.post("http://192.168.0.24:5001/api/books", newBook, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks([...books, response.data]);
@@ -67,7 +67,7 @@ const BooksList = ({ role, onLogout }) => {
         const token = localStorage.getItem("token");
         try {
             const response = await axios.put(
-                `http://192.168.0.31:5001/api/books/${editingBook._id}`,
+                `http://192.168.0.24:5001/api/books/${editingBook._id}`,
                 editingBook,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -82,7 +82,7 @@ const BooksList = ({ role, onLogout }) => {
     const handleDeleteBook = async () => {
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://192.168.0.31:5001/api/books/${bookToDelete._id}`, {
+            await axios.delete(`http://192.168.0.24:5001/api/books/${bookToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBooks(books.filter((book) => book._id !== bookToDelete._id));

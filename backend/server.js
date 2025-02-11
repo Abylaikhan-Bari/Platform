@@ -1,23 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+dotenv.config();  // ✅ Make sure dotenv loads before anything else
+
 const connectDB = require('./config/connectDB'); // Import the DB connection function
 
 const authRoutes = require('./routes/auth');  // Authentication routes
 const bookRoutes = require('./routes/books'); // Books CRUD routes
 const roleRoutes = require('./routes/role');  // Role assignment routes
 
-dotenv.config();
 const app = express();
 
 // Middleware
 app.use(express.json());
-// app.use(cors({
-//     origin: ['http://localhost:3000', 'http://192.168.0.31:5001', 'http://192.168.0.31:3000/'],
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true,
-// })); // Allow all origins
-app.use(cors());
+app.use(cors()); // ✅ Enable CORS globally
 
 // Connect to MongoDB
 connectDB();
