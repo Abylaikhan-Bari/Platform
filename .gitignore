@@ -59,3 +59,4 @@ coverage/
 # Exclude specific sensitive files related to secrets or private configurations
 /config/*.json
 !config/firebase-admin.js
+/backend/config/firebase-adminsdk.json

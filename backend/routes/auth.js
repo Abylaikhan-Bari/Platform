@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 // Firebase admin SDK initialization
 admin.initializeApp({
-    credential: admin.credential.cert(require('../config/platform-780bc-firebase-adminsdk-fbsvc-3fd79abd38.json')),  // Adjust the path to your Firebase private key JSON file
+    credential: admin.credential.cert(require(process.env.FIREBASE_ADMIN_SDK)),  // Adjust the path to your Firebase private key JSON file
 });
 
 // User Registration
