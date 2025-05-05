@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const admin = require("firebase-admin");
 const jwt = require("jsonwebtoken");
 
-// Firebase admin SDK initialization
+// Firebase admin SDK initialization (with correct dynamic path resolution)
+const serviceAccount = require(path.resolve(process.env.FIREBASE_ADMIN_SDK));
+
 admin.initializeApp({
-    credential: admin.credential.cert(require(process.env.FIREBASE_ADMIN_SDK)),  // Adjust the path to your Firebase private key JSON file
+    credential: admin.credential.cert(serviceAccount),
 });
 
 // User Registration
-// Register a new user using Firebase
 router.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
@@ -43,16 +45,12 @@ router.post("/register", async (req, res) => {
     }
 });
 
-
-// User Login (using Firebase authentication)
+// User Login
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Verify user credentials using Firebase Admin SDK
-        const userRecord = await admin.auth().getUserByEmail(username);  // Firebase will handle password verification
-        // If we are verifying passwords, Firebase handles that directly
-        // Generate JWT using Firebase UID
+        const userRecord = await admin.auth().getUserByEmail(username);
         const token = await admin.auth().createCustomToken(userRecord.uid);
 
         res.status(200).json({ token, message: "Login successful" });
