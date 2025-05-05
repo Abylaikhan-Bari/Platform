@@ -59,7 +59,7 @@ const BooksList = ({ role, onLogout }) => {
             setNewBook({ title: "", author: "", content: "" });
             setShowDialog(false);
         } catch (err) {
-            setError("Failed to create book: " + err.message);
+            setError("Failed to create text: " + err.message);
         }
     };
 
@@ -75,7 +75,7 @@ const BooksList = ({ role, onLogout }) => {
             setEditingBook(null);
             setShowDialog(false);
         } catch (err) {
-            setError("Failed to update book: " + err.message);
+            setError("Failed to update text: " + err.message);
         }
     };
 
@@ -89,7 +89,7 @@ const BooksList = ({ role, onLogout }) => {
             setBookToDelete(null);
             setShowDialog(false);
         } catch (err) {
-            setError("Failed to delete book: " + err.message);
+            setError("Failed to delete text: " + err.message);
         }
     };
 
@@ -98,7 +98,7 @@ const BooksList = ({ role, onLogout }) => {
             {/* 🔹 HEADER */}
             <header className="header">
                 <h1>
-                    <span role="img" aria-label="Book Emoji">📚</span> Books
+                    <span role="img" aria-label="Text Emoji">📄</span> Text
                 </h1>
                 <nav>
                     {userEmail && <span className="user-email">{userEmail}</span>}
@@ -110,7 +110,7 @@ const BooksList = ({ role, onLogout }) => {
             {/* 🔹 MAIN CONTENT */}
             <main className="main-content">
                 <h2>
-                    <span role="img" aria-label="Open Book Emoji">📖</span> Available Books
+                    <span role="img" aria-label="Open Book Emoji">📄</span> Available Texts
                 </h2>
 
                 {tokenExpired ? (
@@ -124,7 +124,7 @@ const BooksList = ({ role, onLogout }) => {
 
                         {role === "admin" && (
                             <button className="btn-primary" onClick={() => { setDialogType("add"); setShowDialog(true); }}>
-                                <span role="img" aria-label="Plus Sign">➕</span> Add Book
+                                <span role="img" aria-label="Plus Sign">➕</span> Add Text
                             </button>
                         )}
 
@@ -148,7 +148,7 @@ const BooksList = ({ role, onLogout }) => {
                                     </div>
                                 ))
                             ) : (
-                                <p className="empty-message">No books available.</p>
+                                <p className="empty-message">No texts available.</p>
                             )}
                         </div>
                     </>
@@ -157,7 +157,7 @@ const BooksList = ({ role, onLogout }) => {
 
             {/* 🔹 FOOTER */}
             <footer className="footer">
-                <p>© 2025 Books. All rights reserved.</p>
+                <p>© 2025 Platform. All rights reserved.</p>
             </footer>
 
             {/* 🔹 DIALOG WINDOW FOR ADD/EDIT/DELETE BOOK */}
@@ -173,7 +173,7 @@ const BooksList = ({ role, onLogout }) => {
                             </>
                         ) : (
                             <>
-                                <h2>{dialogType === "edit" ? "Edit Book" : "Add New Book"}</h2>
+                                <h2>{dialogType === "edit" ? "Edit Text" : "Add New Text"}</h2>
                                 <input
                                     type="text"
                                     placeholder="Title"
@@ -198,7 +198,7 @@ const BooksList = ({ role, onLogout }) => {
                                         : setNewBook({ ...newBook, content: e.target.value })}
                                 />
                                 <button className="btn-primary" onClick={dialogType === "edit" ? handleUpdateBook : handleCreateBook}>
-                                    {dialogType === "edit" ? "Save Changes" : "Add Book"}
+                                    {dialogType === "edit" ? "Save Changes" : "Add Text"}
                                 </button>
                             </>
                         )}
